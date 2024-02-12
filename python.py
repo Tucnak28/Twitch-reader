@@ -24,6 +24,7 @@ action_to_take = input("Enter word to send: ")
 repeat_input = input("Enter how many times you want the message to be written sequentially (0 for random between 1-5): ")
 cooldown_period = int(input("Enter how many seconds before sending the message in seconds: "))
 cooldown_after_send = int(input("Enter the cooldown period after sending the message in seconds: "))
+timer_reset_seconds = int(input("Enter the number of seconds for the timer reset: "))
 
 # Check if the input is numeric
 if repeat_input.isdigit():
@@ -81,7 +82,7 @@ while True:
             last_action_time = time.time()
             last_message_sent_time = time.time()
     
-    # Reset the counter after 30 seconds
-    if time.time() - reset_timer >= 30:
+    # Reset the counter after the specified number of seconds
+    if time.time() - reset_timer >= timer_reset_seconds:
         word_count = 0
         reset_timer = time.time()
