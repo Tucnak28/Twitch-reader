@@ -5,55 +5,11 @@ import time
 import random
 import subprocess
 
-CONFIG_FILE = 'config.json'
+CONFIG_DIR = 'configs'
 
-def load_config():
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as f:
-            return json.load(f)
-    else:
-        return None
-
-def save_config(config):
-    with open(CONFIG_FILE, 'w') as f:
-        json.dump(config, f, indent=4)
-
-def prompt_user_for_config():
-    nickname = input("Enter your nickname: ")
-    token = input("Enter your token: ")
-    channel = "#" + input("Enter the channel name (e.g., 'respinnerstv'): ")
-    word_to_detect = input("Enter the word to detect: ")
-    count_threshold = int(input("Enter the count threshold: "))
-    action_to_take = input("Enter word to send: ")
-    repeat_input = input("Enter how many times you want the message to be written sequentially (0 for random between 1-5): ")
-    cooldown_period = int(input("Enter how many seconds before sending the message in seconds: "))
-    cooldown_after_send = int(input("Enter the cooldown period after sending the message in seconds: "))
-    timer_reset_seconds = int(input("Enter the number of seconds for the timer reset: "))
-
-    if repeat_input.isdigit():
-        repeat = int(repeat_input)
-        if repeat == 0:
-            repeat = random.randint(1, 5)
-    elif repeat_input.strip() == "":
-        repeat = 1
-    else:
-        print("Invalid input. Please enter a valid number.")
-
-    config = {
-        "nickname": nickname,
-        "token": token,
-        "channel": channel,
-        "word_to_detect": word_to_detect,
-        "count_threshold": count_threshold,
-        "action_to_take": action_to_take,
-        "repeat": repeat,
-        "cooldown_period": cooldown_period,
-        "cooldown_after_send": cooldown_after_send,
-        "timer_reset_seconds": timer_reset_seconds
-    }
-
-    save_config(config)
-    return config
+def load_config(file_path):
+    with open(file_path, 'r') as f:
+        return json.load(f)
 
 def git_pull():
     try:
@@ -65,20 +21,37 @@ def git_pull():
 # Git pull to update the local repository
 git_pull()
 
-# Load configuration
-config = load_config()
+# Load configuration files from the configs folder
+configs = {}
+for file_name in os.listdir(CONFIG_DIR):
+    if file_name.endswith('.json'):
+        file_path = os.path.join(CONFIG_DIR, file_name)
+        config_name = os.path.splitext(file_name)[0]
+        configs[config_name] = load_config(file_path)
 
-if config is None:
-    print("Configuration file not found. Please provide the following details:")
-    config = prompt_user_for_config()
+# Print the menu of configurations
+print("Available configurations:")
+for index, config_name in enumerate(configs.keys(), 1):
+    print(f"{index}) {config_name}")
 
-# Define variables from config
-server = 'irc.chat.twitch.tv'
-port = 6667
+# Select a config from the menu
+selected_index = None
+while not selected_index:
+    try:
+        selected_index = int(input("Enter the number of the configuration you want to use: "))
+        if selected_index < 1 or selected_index > len(configs):
+            print("Invalid selection. Please enter a number within the range.")
+            selected_index = None
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
+# Define variables from selected config
+selected_config_name = list(configs.keys())[selected_index - 1]
+config = configs[selected_config_name]
 
 # Connect to Twitch IRC server
 sock = socket.socket()
-sock.connect((server, port))
+sock.connect((config['server'], config['port']))
 sock.send(f"PASS {config['token']}\n".encode('utf-8'))
 sock.send(f"NICK {config['nickname']}\n".encode('utf-8'))
 sock.send(f"JOIN {config['channel']}\n".encode('utf-8'))
