@@ -5,7 +5,10 @@ import time
 import random
 import subprocess
 
-CONFIG_DIR = 'configs'
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Define the path to the 'configs' directory
+CONFIG_DIR = os.path.join(current_directory, 'configs')
 
 def load_config(file_path):
     with open(file_path, 'r') as f:
