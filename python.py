@@ -15,9 +15,8 @@ server = 'irc.chat.twitch.tv'
 port = 6667
 
 # Prompt the user for variable values
-
 nickname = input("Enter your nickname: ")
-token = input("enter your token: ")
+token = input("Enter your token: ")
 channel = "#" + input("Enter the channel name (e.g., 'respinnerstv'): ")
 word_to_detect = input("Enter the word to detect: ")
 count_threshold = int(input("Enter the count threshold: "))
@@ -52,6 +51,7 @@ print("Script has started!")
 word_count = 0
 last_action_time = time.time()
 last_message_sent_time = 0
+reset_timer = time.time()  # Initialize the timer
 
 # Main loop
 while True:
@@ -62,7 +62,7 @@ while True:
     
     elif len(resp) > 0:
         # Count occurrences of the word to detect
-        if(resp.count(word_to_detect) > 0):
+        if resp.count(word_to_detect) > 0:
             # Check if the cooldown period after sending the message has elapsed
             if time.time() - last_message_sent_time > cooldown_after_send:
                 word_count += 1
@@ -80,3 +80,8 @@ while True:
             word_count = 0
             last_action_time = time.time()
             last_message_sent_time = time.time()
+    
+    # Reset the counter after 30 seconds
+    if time.time() - reset_timer >= 30:
+        word_count = 0
+        reset_timer = time.time()
