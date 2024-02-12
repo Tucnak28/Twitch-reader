@@ -1,7 +1,15 @@
 import socket
 import time
 import random
+import subprocess
 
+# Git pull to update the local repository
+try:
+    subprocess.run(['git', 'pull'])
+    print("Git pull completed successfully.")
+except Exception as e:
+    print(f"Error during git pull: {e}")
+    
 # Define variables
 server = 'irc.chat.twitch.tv'
 port = 6667
