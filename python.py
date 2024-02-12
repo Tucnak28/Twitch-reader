@@ -68,15 +68,6 @@ last_message_sent_time = 0
 reset_timer = time.time()  # Initialize the timer
 
 
-if isinstance(config['repeat'], str) and config['repeat'].isdigit():
-    config['repeat'] = int(config['repeat'])
-    if config['repeat'] == 0:
-        config['repeat'] = random.randint(1, 5)
-elif config['repeat'] == "":
-    config['repeat'] = 1
-else:
-    print("Invalid input. Please enter a valid number.")
-
 # Main loop
 while True:
     resp = sock.recv(2048).decode('utf-8')
