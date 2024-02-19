@@ -74,7 +74,7 @@ while True:
 
     if resp.startswith('PING'):
         sock.send("PONG\n".encode('utf-8'))
-    
+
     elif len(resp) > 0:
         # Count occurrences of the word to detect
         if resp.count(config['word_to_detect']) > 0:
@@ -88,7 +88,8 @@ while True:
             print(f"{current_time} - Sent")
             # Send the specified action to the chat
             # Create the message by concatenating the action_to_take words
-            message = " ".join([config['action_to_take'] for _ in range(config['repeat'])])
+            repeat_count = config['repeat'] if config['repeat'] > 0 else random.randint(1, 5)
+            message = " ".join([config['action_to_take'] for _ in range(repeat_count)])
             # Send the message to the chat
             sock.send(f"PRIVMSG {config['channel']} :{message}\n".encode('utf-8'))
             # Reset the count and update time of last action and last message sent
